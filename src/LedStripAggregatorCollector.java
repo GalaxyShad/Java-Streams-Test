@@ -26,7 +26,7 @@ public class LedStripAggregatorCollector implements Collector<LedStrip, LedStrip
 
     @Override
     public Function<LedStripAggregator, Double> finisher() {
-        return LedStripAggregator::getMaxBrightness;
+        return LedStripAggregator::getMaxColorTemperature;
     }
 
     @Override

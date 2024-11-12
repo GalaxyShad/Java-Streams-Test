@@ -28,10 +28,10 @@ public class Main {
 
         // TODO find another way and parameter to measure statistic
         for (LedStrip strip : stripList) {
-            var bright = strip.averageBrightness();
+            var colorTemperature = strip.averageColorTemperature();
 
-            if (bright > max) {
-                max = bright;
+            if (colorTemperature > max) {
+                max = colorTemperature;
             }
         }
         var time = System.nanoTime() - start;
@@ -42,14 +42,14 @@ public class Main {
         var start = System.nanoTime();
         var max = Arrays
                 .stream(stripList)
-                .max(Comparator.comparingDouble(LedStrip::averageBrightness));
+                .max(Comparator.comparingDouble(LedStrip::averageColorTemperature));
         var time = System.nanoTime() - start;
         System.out.println("Stream API (ns): " + time);
     }
 
     private static void measureOwnCollector(LedStrip[] stripList) {
         var start = System.nanoTime();
-        var maxBrightness = Arrays.stream(stripList)
+        var maxColorTemperature = Arrays.stream(stripList)
                 .collect(new LedStripAggregatorCollector());
         var time = System.nanoTime() - start;
         System.out.println("Custom Aggregator (ns): " + time);

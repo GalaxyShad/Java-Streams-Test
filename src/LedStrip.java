@@ -7,7 +7,7 @@ public class LedStrip {
     private final int distanceBetweenLed;
     private final ArrayList<Led> ledList;
 
-    public LedStrip(Strip base, Date creationDate, int distanceBetweenLed,  ArrayList<Led> ledList) {
+    public LedStrip(Strip base, Date creationDate, int distanceBetweenLed, ArrayList<Led> ledList) {
         this.base = base;
         this.creationDate = creationDate;
         this.distanceBetweenLed = distanceBetweenLed;
@@ -26,18 +26,17 @@ public class LedStrip {
         return ledList;
     }
 
-    public double averageBrightness() {
-        double avgBrigtness = 0.0;
+    public double averageColorTemperature() {
+        double avgColorTemperature = 0.0;
 
-        for (Led led  : ledList) {
-            avgBrigtness += led.getBrightness();
+        for (Led led : ledList) {
+            avgColorTemperature += led.getColorTemperature();
         }
 
-        return avgBrigtness / ledList.size();
+        return avgColorTemperature / ledList.size();
     }
 
     public Strip getBase() {
         return base;
     }
 }
-

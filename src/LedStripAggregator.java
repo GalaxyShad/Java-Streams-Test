@@ -1,21 +1,21 @@
 public class LedStripAggregator {
-    private double maxBrightness = 0.0;
+    private double maxColorTemperature = 0.0;
 
     public void accumulate(LedStrip strip) {
-        double bright = strip.averageBrightness();
-        if (bright > maxBrightness) {
-            maxBrightness = bright;
+        double colorTemperature = strip.averageColorTemperature();
+        if (colorTemperature > maxColorTemperature) {
+            maxColorTemperature = colorTemperature;
         }
     }
 
     public LedStripAggregator combine(LedStripAggregator other) {
-        if (other.maxBrightness > maxBrightness) {
-            maxBrightness = other.maxBrightness;
+        if (other.maxColorTemperature > maxColorTemperature) {
+            maxColorTemperature = other.maxColorTemperature;
         }
         return this;
     }
 
-    public double getMaxBrightness() {
-        return maxBrightness;
+    public double getMaxColorTemperature() {
+        return maxColorTemperature;
     }
 }
