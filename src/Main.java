@@ -26,7 +26,6 @@ public class Main {
         var start = System.nanoTime();
         var max = 0.0;
 
-        // TODO find another way and parameter to measure statistic
         for (LedStrip strip : stripList) {
             var colorTemperature = strip.averageColorTemperature();
 
