@@ -1,9 +1,22 @@
+import java.io.BufferedWriter;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.Arrays;
 import java.util.Comparator;
 
 //TIP To <b>Run</b> code, press <shortcut actionId="Run"/> or
 // click the <icon src="AllIcons.Actions.Execute"/> icon in the gutter.
 public class Main {
+    public static void appendToFile(String fileName, String content) {
+        try (var writer = new BufferedWriter(new FileWriter(fileName, true))) {
+            writer.write(content);
+            writer.newLine(); // Добавляем новую строку после записи
+            System.out.println("Data successfully appended to the file.");
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
     public static void main(String[] args) {
         //TIP Press <shortcut actionId="ShowIntentionActions"/> with your caret at the highlighted text
         // to see how IntelliJ IDEA suggests fixing it.
@@ -11,18 +24,27 @@ public class Main {
 
         var countList = new int[]{5_000, 50_000, 250_000};
 
-        for (int count : countList) {
-            var ledStrips = gen.generate(count);
+        for (int i = 0; i < 3; i++) {
+            appendToFile(countList[i] + ".csv",  "№ итерации;цикл;стрим;коллектор");
+        }
 
-            System.out.println("\nLedStrip Count: " + count);
 
-            measureLoop(ledStrips);
-            measureStream(ledStrips);
-            measureOwnCollector(ledStrips);
+        for (int i = 0; i < 50; i++) {
+            for (int count : countList) {
+                var ledStrips = gen.generate(count);
+
+                System.out.println("\nLedStrip Count: " + count);
+
+                var loop = measureLoop(ledStrips);
+                var stream = measureStream(ledStrips);
+                var collector = measureOwnCollector(ledStrips);
+
+                appendToFile(count + ".csv", (i+1) + ";" + loop + ";" + stream + ";" + collector);
+            }
         }
     }
 
-    private static void measureLoop(LedStrip[] stripList) {
+    private static long measureLoop(LedStrip[] stripList) {
         var start = System.nanoTime();
         var max = 0.0;
 
@@ -35,22 +57,28 @@ public class Main {
         }
         var time = System.nanoTime() - start;
         System.out.println("Loop (ns): " + time);
+
+        return time;
     }
 
-    private static void measureStream(LedStrip[] stripList) {
+    private static long measureStream(LedStrip[] stripList) {
         var start = System.nanoTime();
         var max = Arrays
                 .stream(stripList)
                 .max(Comparator.comparingDouble(LedStrip::averageColorTemperature));
         var time = System.nanoTime() - start;
         System.out.println("Stream API (ns): " + time);
+
+        return time;
     }
 
-    private static void measureOwnCollector(LedStrip[] stripList) {
+    private static long measureOwnCollector(LedStrip[] stripList) {
         var start = System.nanoTime();
         var maxColorTemperature = Arrays.stream(stripList)
                 .collect(new LedStripAggregatorCollector());
         var time = System.nanoTime() - start;
         System.out.println("Custom Aggregator (ns): " + time);
+
+        return time;
     }
 }
