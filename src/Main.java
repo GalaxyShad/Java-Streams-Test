@@ -4,8 +4,6 @@ import java.io.IOException;
 import java.util.Arrays;
 import java.util.Comparator;
 
-//TIP To <b>Run</b> code, press <shortcut actionId="Run"/> or
-// click the <icon src="AllIcons.Actions.Execute"/> icon in the gutter.
 public class Main {
     public static void appendToFile(String fileName, String content) {
         try (var writer = new BufferedWriter(new FileWriter(fileName, true))) {
@@ -18,8 +16,6 @@ public class Main {
     }
 
     public static void main(String[] args) {
-        //TIP Press <shortcut actionId="ShowIntentionActions"/> with your caret at the highlighted text
-        // to see how IntelliJ IDEA suggests fixing it.
         var gen = new LedStripGenerator();
 
         var countList = new int[]{5_000, 50_000, 250_000};
@@ -49,13 +45,14 @@ public class Main {
         var max = 0.0;
 
         for (LedStrip strip : stripList) {
-            var colorTemperature = strip.averageColorTemperature();
+            var colorTemperature = Delayer.delayAndExecute(2, strip::averageColorTemperature);
 
             if (colorTemperature > max) {
                 max = colorTemperature;
             }
         }
         var time = System.nanoTime() - start;
+
         System.out.println("Loop (ns): " + time);
 
         return time;
@@ -67,6 +64,7 @@ public class Main {
                 .stream(stripList)
                 .max(Comparator.comparingDouble(LedStrip::averageColorTemperature));
         var time = System.nanoTime() - start;
+
         System.out.println("Stream API (ns): " + time);
 
         return time;
@@ -77,6 +75,7 @@ public class Main {
         var maxColorTemperature = Arrays.stream(stripList)
                 .collect(new LedStripAggregatorCollector());
         var time = System.nanoTime() - start;
+
         System.out.println("Custom Aggregator (ns): " + time);
 
         return time;
