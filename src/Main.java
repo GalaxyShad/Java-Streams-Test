@@ -9,7 +9,6 @@ public class Main {
         try (var writer = new BufferedWriter(new FileWriter(fileName, true))) {
             writer.write(content);
             writer.newLine(); // Добавляем новую строку после записи
-            System.out.println("Data successfully appended to the file.");
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -17,7 +16,6 @@ public class Main {
 
     public static void main(String[] args) {
         var gen = new LedStripGenerator();
-
         var countList = new int[]{5_000, 50_000, 250_000};
 
 //        lab1Measure(gen, countList);
@@ -71,20 +69,25 @@ public class Main {
 
     public static void lab1Measure(LedStripGenerator gen, int[] countList) {
         for (int i = 0; i < 3; i++) {
-            appendToFile(countList[i] + ".csv", "№ итерации;цикл;стрим;коллектор");
+            var labelsString = "№ итерации;цикл;стрим;коллектор";
+
+            appendToFile(countList[i] + ".csv",  labelsString);
+            System.out.println(labelsString);
         }
+
 
         for (int i = 0; i < 50; i++) {
             for (int count : countList) {
                 var ledStrips = gen.generate(count);
 
-                System.out.println("\nLedStrip Count: " + count);
+                var loop = Measurament.measureIterative(ledStrips);
+                var stream = Measurament.measureStream(ledStrips);
+                var collector = Measurament.measureOwnCollector(ledStrips);
 
-                var loop = measureLoop(ledStrips);
-                var stream = measureStreamSequential(ledStrips);
-                var collector = measureOwnCollector(ledStrips);
+                var dataString = (i+1) + ";\t\t\t" + loop + ";\t\t" + stream + ";\t\t" + collector;
 
-                appendToFile(count + ".csv", (i + 1) + ";" + loop + ";" + stream + ";" + collector);
+                System.out.println("LedStrip Count: " + count + " data: " + dataString);
+                appendToFile(count + ".csv", dataString);
             }
         }
     }
