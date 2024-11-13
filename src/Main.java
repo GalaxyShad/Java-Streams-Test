@@ -18,8 +18,8 @@ public class Main {
         var gen = new LedStripGenerator();
         var countList = new int[]{5_000, 50_000, 250_000};
 
-//        lab1Measure(gen, countList);
-        lab2Measure(gen, countList);
+        lab1Measure(gen, countList);
+//        lab2Measure(gen, countList);
     }
 
     public static void lab2Measure(LedStripGenerator gen, int[] countList) {
@@ -110,9 +110,6 @@ public class Main {
         return time;
     }
 
-    private static long measureStreamSequential(LedStrip[] stripList) {
-        return measureStream(stripList, false, 0);
-    }
 
     private static long measureStream(LedStrip[] stripList, boolean useParallel, int delayMillis) {
         var start = System.nanoTime();
@@ -132,14 +129,4 @@ public class Main {
         return time;
     }
 
-    private static long measureOwnCollector(LedStrip[] stripList) {
-        var start = System.nanoTime();
-        var maxColorTemperature = Arrays.stream(stripList)
-                .collect(new LedStripAggregatorCollector());
-        var time = System.nanoTime() - start;
-
-        System.out.println("Custom Aggregator (ns): " + time);
-
-        return time;
-    }
 }
