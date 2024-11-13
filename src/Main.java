@@ -1,8 +1,11 @@
 import java.io.BufferedWriter;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Comparator;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 //TIP To <b>Run</b> code, press <shortcut actionId="Run"/> or
 // click the <icon src="AllIcons.Actions.Execute"/> icon in the gutter.
@@ -35,7 +38,7 @@ public class Main {
 
                 System.out.println("\nLedStrip Count: " + count);
 
-                var loop = measureLoop(ledStrips);
+                var loop = measureIterative(ledStrips);
                 var stream = measureStream(ledStrips);
                 var collector = measureOwnCollector(ledStrips);
 
@@ -44,29 +47,32 @@ public class Main {
         }
     }
 
-    private static long measureLoop(LedStrip[] stripList) {
+    private static long measureIterative(LedStrip[] stripList) {
         var start = System.nanoTime();
-        var max = 0.0;
+
+        Map<Integer, ArrayList<LedStrip>> groupedByDistanceBetweenLeds = new HashMap<>();
 
         for (LedStrip strip : stripList) {
-            var colorTemperature = strip.averageColorTemperature();
-
-            if (colorTemperature > max) {
-                max = colorTemperature;
-            }
+            int distance = strip.getDistanceBetweenLed();
+            groupedByDistanceBetweenLeds.computeIfAbsent(distance, _ -> new ArrayList<>()).add(strip);
         }
+
         var time = System.nanoTime() - start;
-        System.out.println("Loop (ns): " + time);
+
+        System.out.println("Iterative (ns): " + time);
 
         return time;
     }
 
     private static long measureStream(LedStrip[] stripList) {
         var start = System.nanoTime();
-        var max = Arrays
+
+        var groupedByDistanceBetweenLeds = Arrays
                 .stream(stripList)
-                .max(Comparator.comparingDouble(LedStrip::averageColorTemperature));
+                .collect(Collectors.groupingBy(LedStrip::getDistanceBetweenLed));
+
         var time = System.nanoTime() - start;
+
         System.out.println("Stream API (ns): " + time);
 
         return time;
@@ -74,9 +80,12 @@ public class Main {
 
     private static long measureOwnCollector(LedStrip[] stripList) {
         var start = System.nanoTime();
-        var maxColorTemperature = Arrays.stream(stripList)
-                .collect(new LedStripAggregatorCollector());
+
+        var groupedByDistanceBetweenLeds = Arrays.stream(stripList)
+                .collect(new LedStripCollector());
+
         var time = System.nanoTime() - start;
+
         System.out.println("Custom Aggregator (ns): " + time);
 
         return time;
