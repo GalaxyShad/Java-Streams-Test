@@ -17,14 +17,16 @@ public class LedStripCollector implements Collector<LedStrip, Map<Integer, List<
         return (map, strip) -> map.computeIfAbsent(strip.getDistanceBetweenLed(), k -> new ArrayList<>()).add(strip);
     }
 
+    // Объединяет две карты, если поток разделен на несколько частей
     @Override
     public BinaryOperator<Map<Integer, List<LedStrip>>> combiner() {
         return (map1, map2) -> {
-            map2.forEach((key, value) -> map1.merge(key, value, (list1, list2) -> {
-                list1.addAll(list2);
-                return list1;
-            }));
-            return map1;
+            var res = new HashMap<Integer, List<LedStrip>>();
+
+            res.putAll(map1);
+            res.putAll(map2);
+
+            return res;
         };
     }
 
