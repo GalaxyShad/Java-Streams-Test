@@ -1,10 +1,11 @@
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.Map;
+package ledstrips;
+
+import utils.Delayer;
+
+import java.util.*;
 import java.util.stream.Collectors;
 
-public class Measurament {
+public class Measuraments {
     public static long measureIterative(LedStrip[] stripList) {
         var start = System.nanoTime();
 
@@ -27,6 +28,24 @@ public class Measurament {
         var groupedByDistanceBetweenLeds = Arrays
                 .stream(stripList)
                 .collect(Collectors.groupingBy(LedStrip::getDistanceBetweenLed));
+
+        var time = System.nanoTime() - start;
+
+        return time;
+    }
+
+    public static long measureStream(LedStrip[] stripList, boolean useParallel, int delayNanos) {
+        var start = System.nanoTime();
+
+        var stream = Arrays.stream(stripList);
+
+        if (useParallel) {
+            stream = stream.parallel();
+        }
+
+        var groupedByDistanceBetweenLeds = Arrays
+                .stream(stripList)
+                .collect(Collectors.groupingBy(x -> Delayer.delayAndExecute(delayNanos, x::getDistanceBetweenLed, 0)));
 
         var time = System.nanoTime() - start;
 

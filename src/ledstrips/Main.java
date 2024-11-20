@@ -1,8 +1,8 @@
+package ledstrips;
+
 import java.io.BufferedWriter;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.util.Arrays;
-import java.util.Comparator;
 
 public class Main {
     public static void appendToFile(String fileName, String content) {
@@ -18,13 +18,14 @@ public class Main {
         var gen = new LedStripGenerator();
         var countList = new int[]{5_000, 50_000, 250_000};
 
-        lab1Measure(gen, countList);
-//        lab2Measure(gen, countList);
+//        lab1Measure(gen, countList);
+        //lab2Measure(gen, countList);
     }
 
     public static void lab2Measure(LedStripGenerator gen, int[] countList) {
-        var millisDelay = 2;
-        var millisDelayString = millisDelay + "millis delay";
+        var nanosDelay = 2;
+        var iterationsNumber = 1;
+        var millisDelayString = nanosDelay + "millis delay";
 
         for (int i = 0; i < 3; i++) {
             appendToFile(countList[i] + ".csv",
@@ -33,23 +34,30 @@ public class Main {
                     ";parallel " + millisDelayString);
         }
 
-        for (int i = 0; i < 15; i++) {
+        for (int i = 0; i < iterationsNumber; i++) {
             for (int count : countList) {
                 var ledStrips = gen.generate(count);
 
                 System.out.println("\nLedStrip Count: " + count);
 
-                var seq = measureStream(ledStrips, false, 0);
-                var par = measureStream(ledStrips, true, 0);
+                var seq = Measuraments.measureStream(ledStrips, false, 0);
+                System.out.println("Seq: " + seq);
 
-                var seqDelayed = measureStream(ledStrips, false, millisDelay);
-                var parDelayed = measureStream(ledStrips, true, millisDelay);
+                var par = Measuraments.measureStream(ledStrips, true, 0);
+                System.out.println("Par: " + par);
+
+                var seqDelayed = Measuraments.measureStream(ledStrips, false, nanosDelay);
+                System.out.println("Seq Delayed by " + nanosDelay + "nanos: "  + seqDelayed);
+
+                var parDelayed = Measuraments.measureStream(ledStrips, true, nanosDelay);
+                System.out.println("Par Delayed by " + nanosDelay + "nanos: "  + parDelayed);
 
                 appendToFile(count + ".csv", (i + 1) + ";" + seq + ";" + par + ";" + seqDelayed + ";" + parDelayed);
             }
         }
 
         System.out.println("Приступаем к поиску количества элементов где параллельный и последовательный способы были бы одинаковыми по времени");
+
         lab2findWhenSeqAndParTimeDurationEquals(gen);
     }
 
@@ -57,13 +65,13 @@ public class Main {
         for (int i = 1; i < 50_000; i++) {
             var ledStrips = gen.generate(i);
 
-            var seq = measureStream(ledStrips, false, 0);
-            var par = measureStream(ledStrips, true, 0);
+            var seq = Measuraments.measureStream(ledStrips, false, 0);
+            var par = Measuraments.measureStream(ledStrips, true, 0);
 
             if (seq != par)
                 continue;
 
-            System.out.println("\nКол-во элементов при котором параллельная реализаци : " + i);
+            System.out.println("\nКол-во элементов при котором параллельная реализации : " + i);
         }
     }
 
@@ -80,9 +88,9 @@ public class Main {
             for (int count : countList) {
                 var ledStrips = gen.generate(count);
 
-                var loop = Measurament.measureIterative(ledStrips);
-                var stream = Measurament.measureStream(ledStrips);
-                var collector = Measurament.measureOwnCollector(ledStrips);
+                var loop = Measuraments.measureIterative(ledStrips);
+                var stream = Measuraments.measureStream(ledStrips);
+                var collector = Measuraments.measureOwnCollector(ledStrips);
 
                 var dataString = (i+1) + ";\t\t\t" + loop + ";\t\t" + stream + ";\t\t" + collector;
 
@@ -91,42 +99,4 @@ public class Main {
             }
         }
     }
-
-    private static long measureLoop(LedStrip[] stripList) {
-        var start = System.nanoTime();
-        var max = 0.0;
-
-        for (LedStrip strip : stripList) {
-            var colorTemperature = Delayer.delayAndExecute(2, strip::averageColorTemperature);
-
-            if (colorTemperature > max) {
-                max = colorTemperature;
-            }
-        }
-        var time = System.nanoTime() - start;
-
-        System.out.println("Loop (ns): " + time);
-
-        return time;
-    }
-
-
-    private static long measureStream(LedStrip[] stripList, boolean useParallel, int delayMillis) {
-        var start = System.nanoTime();
-
-        var stream = Arrays.stream(stripList);
-
-        if (useParallel) {
-            stream = stream.parallel();
-        }
-
-        var max = stream.max(Comparator.comparingDouble((x) -> Delayer.delayAndExecute(delayMillis, x::averageColorTemperature)));
-
-        var time = System.nanoTime() - start;
-
-        System.out.println("Stream API (ns): " + time);
-
-        return time;
-    }
-
 }

@@ -1,3 +1,5 @@
+package ledstrips;
+
 public class Led {
     private final double colorTemperature;
     private final Size size;

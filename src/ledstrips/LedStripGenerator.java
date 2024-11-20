@@ -1,3 +1,5 @@
+package ledstrips;
+
 import java.util.*;
 
 public class LedStripGenerator {

@@ -1,3 +1,5 @@
+package ledstrips;
+
 public enum LedStripColor {
     WHITE,
     BLACK,
