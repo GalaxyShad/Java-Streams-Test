@@ -1,3 +1,5 @@
+package ledstrips.domain;
+
 public class Led {
     private final double colorTemperature;
     private final Size size;

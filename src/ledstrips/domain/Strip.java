@@ -1,3 +1,5 @@
+package ledstrips.domain;
+
 public class Strip {
     private final String name;
     private final LedStripProducerInfo producer;
