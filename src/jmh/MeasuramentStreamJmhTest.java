@@ -1,9 +1,9 @@
 package jmh;
 
-import ledstrips.LedStrip;
+import ledstrips.domain.LedStrip;
 
-import ledstrips.LedStripGenerator;
-import ledstrips.Measuraments;
+import ledstrips.domain.LedStripGenerator;
+import ledstrips.LedStripListPerformanceTests;
 import org.openjdk.jmh.Main;
 import org.openjdk.jmh.annotations.*;
 
@@ -12,10 +12,10 @@ import java.util.concurrent.TimeUnit;
 
 @State(Scope.Benchmark)
 @BenchmarkMode(Mode.AverageTime)
-@OutputTimeUnit(TimeUnit.NANOSECONDS)
-@Fork(value = 1, jvmArgs = {"-Xms2G", "-Xmx2G"})
-@Warmup(iterations = 5, time = 1, timeUnit = TimeUnit.SECONDS)
-@Measurement(iterations = 5, time = 1, timeUnit = TimeUnit.SECONDS)
+@OutputTimeUnit(TimeUnit.MILLISECONDS)
+@Fork(value = 1, jvmArgs = {"-Xms4G", "-Xmx4G"})
+@Warmup(iterations = 2, time = 1)
+@Measurement(iterations = 10, time = 1)
 public class MeasuramentStreamJmhTest {
 
     private LedStrip[] ledStripList;
@@ -26,7 +26,7 @@ public class MeasuramentStreamJmhTest {
     @Param({"true", "false"})
     private boolean useParallel;
 
-    @Param({"2"})
+    @Param({"0", "2"})
     private int delayNanos;
 
     @Setup
@@ -37,7 +37,7 @@ public class MeasuramentStreamJmhTest {
 
     @Benchmark
     public long measureStream() {
-        return Measuraments.measureStream(ledStripList, useParallel, delayNanos);
+        return LedStripListPerformanceTests.measureStream(ledStripList, useParallel, delayNanos);
     }
 
     public static void main(String[] args) throws IOException {

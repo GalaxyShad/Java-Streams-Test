@@ -1,4 +1,4 @@
-package ledstrips;
+package ledstrips.domain;
 
 public enum LedStripColor {
     WHITE,

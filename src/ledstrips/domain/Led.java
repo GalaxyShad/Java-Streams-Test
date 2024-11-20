@@ -1,4 +1,4 @@
-package ledstrips;
+package ledstrips.domain;
 
 public class Led {
     private final double colorTemperature;

@@ -1,4 +1,4 @@
-package ledstrips;
+package ledstrips.domain;
 
 public class Strip {
     private final String name;
