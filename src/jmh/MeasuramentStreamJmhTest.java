@@ -13,7 +13,7 @@ import java.util.concurrent.TimeUnit;
 @State(Scope.Benchmark)
 @BenchmarkMode(Mode.AverageTime)
 @OutputTimeUnit(TimeUnit.MILLISECONDS)
-@Fork(value = 1, jvmArgs = {"-Xms4G", "-Xmx4G"})
+@Fork(value = 1, jvmArgs = {"-Xms2G", "-Xmx2G"})
 @Warmup(iterations = 2, time = 1)
 @Measurement(iterations = 10, time = 1)
 public class MeasuramentStreamJmhTest {
@@ -23,10 +23,10 @@ public class MeasuramentStreamJmhTest {
     @Param({"5000", "50000", "250000"})
     private int ledStripCount;
 
-    @Param({"true", "false"})
+//    @Param({"true", "false"})
     private boolean useParallel;
 
-    @Param({"0", "2"})
+//    @Param({"0", "2"})
     private int delayNanos;
 
     @Setup
@@ -35,9 +35,14 @@ public class MeasuramentStreamJmhTest {
         ledStripList = gen.generate(ledStripCount);
     }
 
-    @Benchmark
+//    @Benchmark
     public long measureStream() {
         return LedStripListPerformanceTests.measureStream(ledStripList, useParallel, delayNanos);
+    }
+
+    @Benchmark
+    public long measureForkJoin() {
+        return LedStripListPerformanceTests.measureForkJoin(ledStripList, 2);
     }
 
     public static void main(String[] args) throws IOException {

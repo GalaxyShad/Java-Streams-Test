@@ -1,6 +1,7 @@
 package ledstrips;
 
 import ledstrips.domain.LedStrip;
+import ledstrips.grouper.LedStripGrouperForkJoin;
 import ledstrips.grouper.LedStripGrouperIterative;
 import ledstrips.grouper.LedStripGrouperOwnCollector;
 import ledstrips.grouper.LedStripGrouperStream;
@@ -25,6 +26,10 @@ public class LedStripListPerformanceTests {
 
             return grouper.group(stripList);
         });
+    }
+
+    public static long measureForkJoin(LedStrip[] stripList, int delayNanos) {
+        return NanoTimeMeasurer.executeAndGetTime(() -> new LedStripGrouperForkJoin(delayNanos).group(stripList));
     }
 
     public static long measureOwnCollector(LedStrip[] stripList) {

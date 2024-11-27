@@ -6,6 +6,7 @@ import utils.Delayer;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ForkJoinPool;
 import java.util.stream.Collectors;
 
 public class LedStripGrouperStream implements ILedStripGrouper {
@@ -31,9 +32,12 @@ public class LedStripGrouperStream implements ILedStripGrouper {
         }
 
         return stream.collect(
-                Collectors.groupingBy(
+                Collectors.groupingByConcurrent(
                         x -> Delayer.delayAndExecute(delayNanos, x::getDistanceBetweenLed, 0)
                 )
         );
     }
 }
+
+
+
