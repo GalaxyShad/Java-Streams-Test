@@ -1,10 +1,7 @@
 package ledstrips;
 
 import ledstrips.domain.LedStrip;
-import ledstrips.grouper.LedStripGrouperForkJoin;
-import ledstrips.grouper.LedStripGrouperIterative;
-import ledstrips.grouper.LedStripGrouperOwnCollector;
-import ledstrips.grouper.LedStripGrouperStream;
+import ledstrips.grouper.*;
 import utils.NanoTimeMeasurer;
 
 public class LedStripListPerformanceTests {
@@ -34,5 +31,29 @@ public class LedStripListPerformanceTests {
 
     public static long measureOwnCollector(LedStrip[] stripList) {
         return NanoTimeMeasurer.executeAndGetTime(() -> new LedStripGrouperOwnCollector().group(stripList));
+    }
+
+    public static long measureRxJava(LedStrip[] stripList, boolean useParallel, int delayNanos) {
+        return NanoTimeMeasurer.executeAndGetTime(() -> {
+            var grouper = new LedStripGrouperRxJava().useDelay(delayNanos);
+
+            if (useParallel) {
+                grouper.useParallel();
+            }
+
+            return grouper.group(stripList);
+        });
+    }
+
+    public static long measureRxJavaFlowable(LedStrip[] stripList, boolean useParallel, int delayNanos) {
+        return NanoTimeMeasurer.executeAndGetTime(() -> {
+            var grouper = new LedStripGrouperRxJavaFlowable().useDelay(delayNanos);
+
+            if (useParallel) {
+                grouper.useParallel();
+            }
+
+            return grouper.group(stripList);
+        });
     }
 }
