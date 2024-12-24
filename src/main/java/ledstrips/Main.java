@@ -1,6 +1,7 @@
 package ledstrips;
 
 import ledstrips.domain.LedStripGenerator;
+import ledstrips.grouper.LedStripGrouperRxJavaFlowable;
 
 import java.io.BufferedWriter;
 import java.io.FileWriter;
@@ -20,7 +21,9 @@ public class Main {
         var gen = new LedStripGenerator();
         var countList = new int[]{5_000, 50_000, 250_000};
 
-        lab1Measure(gen, countList);
+        var a = new LedStripGrouperRxJavaFlowable().useParallel().group(gen.generate(5_000));
+
+//        lab1Measure(gen, countList);
 //        lab2Measure(gen, countList);
     }
 

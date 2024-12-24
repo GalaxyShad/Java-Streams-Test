@@ -14,19 +14,23 @@ import java.util.concurrent.TimeUnit;
 @BenchmarkMode(Mode.AverageTime)
 @OutputTimeUnit(TimeUnit.MILLISECONDS)
 @Fork(value = 1, jvmArgs = {"-Xms2G", "-Xmx2G"})
-@Warmup(iterations = 2, time = 1)
-@Measurement(iterations = 10, time = 1)
+@Warmup(iterations = 5, time = 1)
+@Measurement(iterations = 5, time = 1)
 public class MeasuramentStreamJmhTest {
 
     private LedStrip[] ledStripList;
 
-    @Param({"5000", "50000", "250000"})
+//    @Param({"110000", "200000", "300000"})
+//    @Param({"500", "2000", "110000"})
+    @Param({"500", "2000"})
     private int ledStripCount;
 
+    @Param({"true"})
 //    @Param({"true", "false"})
     private boolean useParallel;
 
-//    @Param({"0", "2"})
+//    @Param({"0"})
+    @Param({"0", "2"})
     private int delayNanos;
 
     @Setup
@@ -35,12 +39,25 @@ public class MeasuramentStreamJmhTest {
         ledStripList = gen.generate(ledStripCount);
     }
 
+//    @Threads(6)
 //    @Benchmark
+    public long measureRxJavaFlowable() {
+        return LedStripListPerformanceTests.measureRxJavaFlowable(ledStripList, useParallel, delayNanos);
+    }
+
+    @Threads(6)
+    @Benchmark
+    public long measureRxJava() {
+        return LedStripListPerformanceTests.measureRxJava(ledStripList, useParallel, delayNanos);
+    }
+
+    @Threads(6)
+    @Benchmark
     public long measureStream() {
         return LedStripListPerformanceTests.measureStream(ledStripList, useParallel, delayNanos);
     }
 
-    @Benchmark
+//    @Benchmark
     public long measureForkJoin() {
         return LedStripListPerformanceTests.measureForkJoin(ledStripList, 2);
     }
